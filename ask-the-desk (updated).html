@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ask the Desk — Epicenter Front Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FBF9F6;
+    --bg-raised: #F3EEE6;
+    --crimson: #B8001F;
+    --crimson-tint: #FBEAEA;
+    --ink: #201D1A;
+    --ink-soft: #55504A;
+    --border: #E4DDD1;
+    --focus: #1E6FD9;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1A1815;
+      --bg-raised: #24211C;
+      --crimson: #E23B4F;
+      --crimson-tint: #3A1A1D;
+      --ink: #F2EEE7;
+      --ink-soft: #B8B0A4;
+      --border: #3A352C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1A1815;
+    --bg-raised: #24211C;
+    --crimson: #E23B4F;
+    --crimson-tint: #3A1A1D;
+    --ink: #F2EEE7;
+    --ink-soft: #B8B0A4;
+    --border: #3A352C;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+  }
+  header.top {
+    margin-bottom: 28px;
+  }
+  .bell { font-size: 28px; line-height: 1; display: block; margin-bottom: 10px; }
+  h1 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 1.15;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 15.5px;
+    line-height: 1.5;
+    max-width: 52ch;
+    margin: 0;
+  }
+  .search-row {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    background: var(--bg);
+    padding: 18px 0 12px;
+    z-index: 5;
+  }
+  .search-box {
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    font-family: inherit;
+    font-size: 16px;
+    padding: 13px 16px 13px 42px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-raised);
+    color: var(--ink);
+    outline: none;
+  }
+  .search-box input:focus-visible {
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 25%, transparent);
+  }
+  .search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .pill {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--bg-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .pill:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .pill.active {
+    background: var(--crimson);
+    border-color: var(--crimson);
+    color: #fff;
+  }
+  .category-block { margin-top: 34px; }
+  .category-title {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--crimson);
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .entry {
+    border-bottom: 1px solid var(--border);
+  }
+  .entry:last-child { border-bottom: none; }
+  .entry button.q {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    font-family: inherit;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 28px 14px 0;
+    cursor: pointer;
+    position: relative;
+    line-height: 1.4;
+  }
+  .entry button.q:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; }
+  .entry button.q::after {
+    content: "+";
+    position: absolute;
+    right: 2px;
+    top: 12px;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--crimson);
+    transition: transform 0.15s ease;
+  }
+  .entry.open button.q::after {
+    transform: rotate(45deg);
+  }
+  .entry .a {
+    display: none;
+    padding: 0 0 18px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.6;
+    max-width: 62ch;
+    white-space: pre-line;
+  }
+  .entry.open .a { display: block; }
+  .no-results {
+    display: none;
+    padding: 40px 0;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 15px;
+  }
+  footer.note {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="bell">🛎️</span>
+    <h1>Ask the Desk</h1>
+    <p class="subtitle">Quick answers for real shift situations. Search, or browse by category — check here before you call.</p>
+  </header>
+
+  <div class="search-row">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="text" placeholder="Search a question or keyword…" autocomplete="off">
+    </div>
+    <div class="pills" id="pills"></div>
+  </div>
+
+  <div id="results"></div>
+  <p class="no-results" id="noResults">No matches yet — try a different word, or flag it so we can add it.</p>
+
+  <footer class="note">
+    Compiled from the Epicenter FAQ reference document. Text is reproduced as written, nothing has been reworded. If your question isn't here, flag it to your supervisor so it gets added.
+  </footer>
+</div>
+
+<script>
+const data = [
+  { cat: "Keys & Access", q: "Virtual UCard troubleshooting", a: "Virtual UCard trouble shooting in case residents have issues. The app is currently down https://ucard.utah.edu/mobile/#HowToUse https://ucard.utah.edu/mobile/mobile-faqs.php" },
+  { cat: "Keys & Access", q: "Keys & Access Coordinator", a: "Our Keys & Access Coordinator is Remy Smith, he can be reached via Teams." },
+  { cat: "Keys & Access", q: "Locksmith", a: "Our Locksmith is Phillip Wagner, he can be reach via Teams." },
+  { cat: "Keys & Access", q: "Legal requirement for resident access", a: "We are legally required to ensure that all residents have access to their space at all times. If someone says they have lost their key or make you think they might have lost it, you must confirm with them if they have a key, even if this requires having them physically present it at the desk. If a key is lost or misplaced, the resident must take the Loaner Key in order to keep this standard." },
+  { cat: "Keys & Access", q: "What if someone has lost their key?", a: "Always make sure that you have issued their Loaner key to them, this protects us from liability of access. If they are unable to find this key then they will have a lock change after 7 days, this will cost $125/lock that needs changed (Note: Apartments can be more expensive than standard rooms.) If the resident knows they won\u2019t be able to find the key or feel unsafe, you can request an expedited lock change on their behalf by sending a message in the Keys & Access Teams Channel. You can find a template for what to say in the Templates section." },
+  { cat: "Keys & Access", q: "A Resident comes to the desk with a broken, bent, or split key.", a: "Confirm that the key code matches within StarRez, once confirming, swap their broken key for the loaner. This doesn\u2019t require checking out in StarRez, instead you will send a message to Keys & Access informing them of this. You can find a template for what to say in the Templates section." },
+  { cat: "Keys & Access", q: "Key Tag Guide", a: "Key Tag Guide: The Key Cabinet uses a three color tag system whenever the loaner keys leave their assigned spots in the cabinet. The three colors are red, yellow, green. Red Tags are for when we have a missing key with no hints of where it could be. Before tagging anything red, you should always check the key history as well as use the search feature in the Shift Communication Log and Teams to see if someone noted something regarding it being missing. Whenever a red tag is hung, a message should be sent to Sarah immediately. Yellow Tags are for keys that are out for a reason that is logged but aren\u2019t checked out in StarRez. Green Tags are only to be used when the key is properly checked out to the Resident who occupies the room in StarRez." },
+  { cat: "Keys & Access", q: "Adding accesses to a U Card", a: "To add accesses to a U Card, you will use Atrium. This is closely monitored so always verify that you are only adding access to spaces that people are allowed within (i.e. someone living in R1224 shouldn\u2019t have access to the 2nd Floor End-Cap areas.) Violating these standards are grounds for immediate termination." },
+  { cat: "Keys & Access", q: "Exterior door access", a: "The Exterior Doors are on a different access plan and system, if someone reports that they don\u2019t have access please note it in the Shift Communication Log and send a message to Sarah." },
+  { cat: "Keys & Access", q: "Discrepancies between the Key Cabinet, StarRez, and the Key Audit sheet?", a: "Always confirm the key codes first, that resolves most \"discrepancies.\" If it's still off, escalate immediately via the Shift Communication Log, Teams, and a message to Sarah. Remember: You are making the Key Audit sheet match the Key Cabinet. If something is missing in the Key Cabinet, it doesn\u2019t automatically mean you should check it out to the resident in StarRez. Cross-check StarRez, the Excel sheet, the Temp Card binders, and the physical key cabinet \u2014 they all need to match. Update name/date, note changes in Excel, flag any new red tags in the Hospitality Team chat, and log anything unusual in the Shift Communication Log. AM audit happens right after passing off with Security; PM audit is at 10:30 PM before close." },
+  { cat: "Keys & Access", q: "How do you run the Key Audit?", a: "Cross-check StarRez, the Excel sheet, the Temp Card binders, and the physical key cabinet \u2014 they all need to match. Update name/date, note changes in Excel, flag any new red tags in the Hospitality Team chat, and log anything unusual in the Shift Communication Log. AM audit happens right after passing off with Security; PM audit is at 10:30 PM before close." },
+  { cat: "Keys & Access", q: "A Resident\u2019s U Card isn\u2019t working correctly?", a: "Go to utah.atriumcampus.com and SSO login with your CIS credentials. Under \"People,\" look up their UID, go to the Access tab, click the plus sign, and select the access matching where they live (e.g., room 2143 \u2192 \"HRE EPICENTER 2ND FLOOR\"). Confirm the area against StarRez before granting." },
+  { cat: "Keys & Access", q: "How do I make sure someone isn\u2019t charged for a key or Temp Badge?", a: "In StarRez, you can add a note onto the key booking that will be viewable to the Keys & Access team prior to any charges to residents. We have limited ability to help avoid a fee but there are certain circumstances when it is appropriate to waive the fees. Templates for what to say can be found in the Templates section." },
+  { cat: "Keys & Access", q: "When can we help waive key or temp card fees?", a: "There are limited situations where we can help with waiving a fee. Here are some examples of times where we can add a comment: a resident just got a new phone and their Mobile U Card isn\u2019t working now, when doing the key audit you see that a key is back in the cabinet but not returned in the cabinet - this would be a desk error and not a resident\u2019s, certain emergencies (if unsure, you can add a comment and then message in Keys & Access to alert Remy!) NEVER guarantee to a resident that they won\u2019t be charged, we don\u2019t have this authority." },
+  { cat: "Keys & Access", q: "Someone comes to the desk complaining that they were wrongfully charged a late key or temp card fee?", a: "Get their information including asking if they can share the email to epicenter@utah.edu so we can locate when they may have been charged. NEVER guarantee that we can get a charge reversed, but we are happy to investigate if they believe they were wrongfully charged. Escalate to full-time team." },
+  { cat: "Keys & Access", q: "A Resident locked themselves out of their room?", a: "Ask for their UID and look them up by last name, room number, or UID. Confirm their account, then check out the correct floor's loaner key from the EPI Key Cabinet in StarRez. Verify the key code on the back matches before handing it over. They get 30 minutes \u2014 after that it's a $10 late fee, and a $125 lock-change charge if it's never returned." },
+  { cat: "Keys & Access", q: "A Resident is locked out of their room, including the loaner key?", a: "If it is during office hours (M-F 9:00 AM - 5:00 PM) you will reach out to Tim Torgersen, RD, to get them back into their space. If he is unresponsive, we can try requesting to see if a custodial lead is available to help, this should be a rare resource. If it is in off hours (Sat-Sun - ALL HOURS | M-F 5:00 PM - 7:00 AM) you will call the Floor\u2019s CA to come let them in." },
+
+  { cat: "Templates", q: "Lost Key template", a: "Good Morning/Afternoon/Evening/etc., Resident (FULL NAME) | UID: | Room #: has lost their room key. They are requesting an expedited lock change for their peace of mind, they understand that this will result in a lock change charge that can\u2019t be reversed." },
+  { cat: "Templates", q: "Broken/Bent/Split Key template", a: "Good Morning/Afternoon/Evening/etc., Resident FULL NAME | UID: | Room #: | Key Code: has a broken/bent/split key. We have issued the loaner but will need a new key cut, thank you!" },
+  { cat: "Templates", q: "Access Issues template", a: "Good Morning/Afternoon/Evening/etc., Resident (FULL NAME) | UID: | Room #: is having issues accessing the (INSERT AREA THEY CAN\u2019T ACCESS). We have verified that everything is correct in Atrium but their accesses still remain the same. Could we please have someone take a look at this?" },
+  { cat: "Templates", q: "Visitor Notification template", a: "Good Morning/Afternoon/Evening/etc., we have (INSERT NAME) here to meet with (INSERT NAME), is anyone available to meet them?" },
+  { cat: "Templates", q: "Phone Message Notes template", a: "Date of Call:\nName of Caller:\nCall Back Number: \nWho are they trying to reach?\nWhat are they inquiring about?" },
+
+  { cat: "Facilities", q: "Facilities Chat Guidelines", a: "Here are the Guidelines for the Facilities Chat, as all Leadership and Building Personnel are included here.\n- Contact Maintenance immediately for Flooding, Fire, Smoke or Gas smells between Mon- Fri 8:00 am and 4:30 pm\n- Contact Area Duty after hours and weekends\n1. Only enter immediate issues such as: Broken windows, leaks or unsecured doors (hallways, elevators, exterior doors or if resident doors not shutting). And a work order must still be made.\n2. If it is a Residential Issue, the resident must put in a work order to allow maintenance to enter, and if it is: flooding, toilet issues, sink issues, or power is out, you can share the work order number in this chat (e.g. HD-155497) with the nature of the issue in your message.\n3. If you get notified of something broken in the Lobby or a classroom, Desk Staff, or other Full Time Staff must fill out a maintenance order, so it can be addressed as well.\n~Know that maintenance work is based on priority so with minor issues such as, paint touch-ups, minor drywall repair etc we cannot give a timeline on when that will be addressed.~\n4. Laundry Machines issues are handled by an outside contractor, ask resident to submit a service ticket through the CSC Portal (located on the machines themselves!)\n5. If a Contractor/Vendor comes to the desk and needs to be escorted somewhere in the building please message Paul Sanchez & Dustin Nielsen" },
+  { cat: "Facilities", q: "Lower Campus Fire Panel \u2013 Beeping", a: "Student Staff\n1. Review the fire panel for the light. Based on the color of the light, do the following:\n\u2022 GREEN LIGHT \u2013 System normal, no action needed.\n\u2022 RED ALARM \u2013 Evacuate the building, call 911, and contact Area Duty.\n\u2022 YELLOW TROUBLE \u2013 The system requires service. Hospitality Desk staff should email fire@fm.utah.edu with the location and provide the panel message verbatim, along with any relevant observations.\n\u2022 ORANGE SUPERVISORY \u2013 Contact Area Duty and be prepared to share the information displayed on the panel. If possible and safe to do so, attempt to identify the source of the supervisory condition and provide that information to Area Duty.\n2. Staff may press ACKNOWLEDGE only. This silences the panel but does not correct the problem.\n3. Do not reset the fire panel unless directed by authorized fire alarm personnel, the Salt Lake City Fire Department, or the Campus Fire Marshal." },
+  { cat: "Facilities", q: "Fire Marshal email template", a: "When Emailing the Fire Marshal follow this template:\nBe sure to switch to switch to sending from epicenter@utah.edu!\nSUBJECT: DD/MM - Epicenter Fire Panel Yellow Trouble Alarm\nEmail should contain the location and provide the panel message verbatim, along with any relevant observations. (Has gone off multiple times recently, any other insights.)" },
+  { cat: "Facilities", q: "Submit a maintenance request", a: "Submit a request: Maintenance Request Form" },
+  { cat: "Facilities", q: "Facilities hours", a: "Hours: Monday\u2013Friday, 8:00 AM \u2013 4:30 PM" },
+  { cat: "Facilities", q: "After-hours emergencies", a: "After-hours emergencies (breakers, water, HVAC): Call the floor's CA first, they'll determine if AD or on-call maintenance is needed. The desk is unable to directly contact on-call maintenance!" },
+
+  { cat: "Housing", q: "Resident Director", a: "Our Resident Director is Tim Torgersen, he leads the Residential side of the building. Students may need to meet with him if they\u2019ve had incident reports made against them, room moves, roommate problems, etc. His office is located to the left of the desk and is Room 1111. He can be reached via Teams or Email at TTorgerson@housing.utah.edu." },
+  { cat: "Housing", q: "RD office phone number", a: "His office phone number is 801-587-2919." },
+  { cat: "Housing", q: "RD hours", a: "Hours: (Fluctuate with Operational Needs & On-Call Schedule) | Standard Hours: Monday - Friday 9:00 - 17:00" },
+
+  { cat: "Custodial", q: "Pest sightings", a: "If you see pests (I.e. spiders, centipedes, etc.) please try and take a photo and share in the Custodial Teams chat including where it was found. They handle pest control in the building and will coordinate the next scheduled session." },
+  { cat: "Custodial", q: "Clogged toilet", a: "If a toilet is clogged, it first goes through Custodial to try and fix it. You can have residents submit a custodial ticket or message them on teams. If they\u2019re not able to get it fixed they will escalate to facilities." },
+  { cat: "Custodial", q: "Custodial hours", a: "Hours: Monday - Saturday | 8:00 - 20:00 | Contact via Teams Chat, Custodial Leads will coordinate." },
+  { cat: "Custodial", q: "Custodial Manager", a: "Custodial Manager: Roberto Lee" },
+  { cat: "Custodial", q: "Custodial Leads", a: "Custodial Leads: Monica Mu\u00f1oz Capcha and Benjamin Paez" },
+  { cat: "Custodial", q: "Submit a custodial request", a: "Submit a request: Custodial Request Form" },
+  { cat: "Custodial", q: "Cleaning plan details", a: "By area \u2014 what's cleaned:\nOquirrh \u2014 Floors 2\u20136: 2101\u20132119, 3101\u20133119, 4101\u20134119, 5101\u20135119, 6101\u20136119 \u2014 Kitchen, trash collection, bathrooms/showers/locker areas, lounges, tables, sofas, windows, floors, carpet care\nCity Creek \u2014 Ground: 1201\u20131224; Floors 2\u20136: 2201\u20132237, 3201\u20133237, 4201\u20134237, 5201\u20135237, 6201\u20136237 \u2014 Elevators, sofas/chairs, windows, floors, hallways, doors, laundry/trash rooms, carpet care, trash collection, kitchens\nMillcreek \u2014 Common areas, Floors 1\u20136 \u2014 Elevators, sofas/chairs, windows, floors, hallways, doors, laundry/trash rooms, carpet care, trash collection, kitchens\nWasatch \u2014 Floors 1\u20136: 1401\u20131418, 2401\u20132418, 3401\u20133418, 4401\u20134418, 5401\u20135418, 6401\u20136418 \u2014 Kitchen, bathrooms/showers/locker areas, lounges, tables, sofas, windows, floors, carpet care, trash collection\n\nApartment cleaning covers:\n* Kitchen: countertops, stove, sink, microwave, floor\n* Living room: furniture, floor\n* Bathrooms: full clean\n* Hallways: carpet vacuuming (when clear of belongings)\n\nWhat's NOT included:\n* Individual bedrooms are not cleaned\n* Custodial staff will not move/organize personal belongings, they'll clean around blocked items\n* Trash removal & liner replacement inside units is the resident's responsibility, not custodial's\n* Keep common areas clear during cleaning times for best results" },
+
+  { cat: "Internet, WiFi & Ethernet", q: "Register devices", a: "Register devices: All devices must be registered before joining the network \u2192 onboard.utah.edu" },
+  { cat: "Internet, WiFi & Ethernet", q: "Guest WiFi", a: "Guest WiFi: Network name UGUEST \u2014 register your cell phone for a short-term password" },
+  { cat: "Internet, WiFi & Ethernet", q: "Student/Staff WiFi", a: "Student/Staff WiFi: Use UCONNECT or ULINK (stronger signal than guest network)" },
+  { cat: "Internet, WiFi & Ethernet", q: "Ethernet ports", a: "Ethernet ports: Every room has one \u2014 check under/behind furniture if you can't find it. Ports must be activated by IT.\nSubmit a ticket: it.utah.edu\nCall IT Help Desk: 801-581-4000" },
+  { cat: "Internet, WiFi & Ethernet", q: "Outages", a: "Outages: Check current status at it.utah.edu" },
+
+  { cat: "Parking", q: "EP Permit lot", a: "EP Permit lot: Residents only, currently a waitlist\nJoin waitlist: Commuter Services, 801-581-6415" },
+  { cat: "Parking", q: "Alternative parking", a: "Alternative parking: See maps \u2192 commuterservices.utah.edu/parking-maps" },
+
+  { cat: "Room Layout & Modifications", q: "Lofting beds", a: "Lofting beds: Allowed in apartments, doubles, and singles (note: end-cap rooms have full-size, non-loftable beds)" },
+  { cat: "Room Layout & Modifications", q: "No stacking drawers/wardrobes", a: "No stacking drawers/wardrobes: Deemed an ADA/safety hazard, fines apply for stacked furniture" },
+  { cat: "Room Layout & Modifications", q: "No nails/screws in walls", a: "No nails/screws in walls: Per housing contract, damages can be charged. Use command strips instead" },
+  { cat: "Room Layout & Modifications", q: "Common area furniture", a: "Common area furniture: Must stay put, don't relocate it to private spaces" },
+
+  { cat: "Dining on Campus", q: "Meal plan details", a: "Meal plan details: food.utah.edu/students" },
+  { cat: "Dining on Campus", q: "What's open now", a: "What's open now: food.utah.edu" },
+  { cat: "Dining on Campus", q: "Business hours", a: "Business hours: dineoncampus.com/utah/hours-of-operation" },
+  { cat: "Dining on Campus", q: "Dining troubleshooting", a: "Troubleshooting: Contact the Housing Office, Phone: 801-587-2002" },
+  { cat: "Dining on Campus", q: "Cafe Epicenter Hours of Operation", a: "Cafe Epicenter Hours of Operation (May Vary):\nMarket - Monday - Friday | 7 am - 8 pm , Saturday - Sunday | 10:30 am - 8 pm\nKitchen - Monday - Friday | 7 am - 7:45 pm , Saturday - Sunday | 10:30 am - 7:45 pm\nHUGO Coffee - Monday - Thursday | 7 am - 8 pm , Friday | 7 am - 2 pm, Saturday - Sunday | CLOSED" },
+
+  { cat: "To Be Added", q: "Sources still to be compiled into this FAQ", a: "I think we should add FAQ\u2019s from these links as well:\nhttps://www.housing.utah.edu/facilities/\nhttps://www.housing.utah.edu/building/impact-prosperity-epicenter/?tab=llcs\nhttps://www.housing.utah.edu/move-in/frequently-asked-questions/\nhttps://www.housing.utah.edu/moving-in-out/moving-out/\nhttps://www.housing.utah.edu/optional-services/\nhttps://www.housing.utah.edu/orl/resident-policies-responsibilities-2/\nhttps://epicenter.utah.edu/faq/\nhttps://epicenter.utah.edu/housing/\nhttps://prosperity.utah.edu/\nhttps://sorensonimpactinstitute.com/\nhttps://admissions.utah.edu/information-resources/faqs/\nhttps://www.housing.utah.edu/living-the-u-getting-connected-cable-internet/" },
+];
+
+const categories = [...new Set(data.map(d => d.cat))];
+const pillsEl = document.getElementById('pills');
+const resultsEl = document.getElementById('results');
+const searchEl = document.getElementById('search');
+const noResultsEl = document.getElementById('noResults');
+let activeCat = "All";
+
+function makePills() {
+  const all = ["All", ...categories];
+  pillsEl.innerHTML = all.map(c =>
+    `<button class="pill${c === activeCat ? ' active' : ''}" data-cat="${c}">${c}</button>`
+  ).join('');
+  pillsEl.querySelectorAll('.pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCat = btn.dataset.cat;
+      makePills();
+      render();
+    });
+  });
+}
+
+function render() {
+  const term = searchEl.value.trim().toLowerCase();
+  const matches = data.filter(d => {
+    const catOk = activeCat === "All" || d.cat === activeCat;
+    const textOk = !term || d.q.toLowerCase().includes(term) || d.a.toLowerCase().includes(term);
+    return catOk && textOk;
+  });
+
+  if (matches.length === 0) {
+    resultsEl.innerHTML = "";
+    noResultsEl.style.display = "block";
+    return;
+  }
+  noResultsEl.style.display = "none";
+
+  const grouped = {};
+  matches.forEach(d => {
+    if (!grouped[d.cat]) grouped[d.cat] = [];
+    grouped[d.cat].push(d);
+  });
+
+  const catOrder = activeCat === "All" ? categories : [activeCat];
+  let html = "";
+  catOrder.forEach(cat => {
+    if (!grouped[cat]) return;
+    html += `<div class="category-block"><div class="category-title">${cat}</div>`;
+    grouped[cat].forEach((d) => {
+      const openClass = term ? " open" : "";
+      html += `
+        <div class="entry${openClass}">
+          <button class="q" type="button">${d.q}</button>
+          <div class="a">${d.a}</div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  resultsEl.innerHTML = html;
+
+  resultsEl.querySelectorAll('.entry .q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.entry').classList.toggle('open');
+    });
+  });
+}
+
+searchEl.addEventListener('input', render);
+makePills();
+render();
+</script>
+</body>
+</html>
